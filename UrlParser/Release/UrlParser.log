@@ -1,0 +1,7 @@
+﻿  main.cpp
+main.cpp(436): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+  All 459 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  UrlParser.vcxproj -> D:\myfiles\UrlParser\Release\UrlParser.exe
+  UrlParser.vcxproj -> D:\myfiles\UrlParser\Release\UrlParser.pdb (Full PDB)

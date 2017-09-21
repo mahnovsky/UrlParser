@@ -1,0 +1,4 @@
+﻿  main.cpp
+d:\myfiles\urlparser\urlparser\main.cpp(436): warning C4018: '<': signed/unsigned mismatch
+  UrlParser.vcxproj -> D:\myfiles\UrlParser\Debug\UrlParser.exe
+  UrlParser.vcxproj -> D:\myfiles\UrlParser\Debug\UrlParser.pdb (Full PDB)

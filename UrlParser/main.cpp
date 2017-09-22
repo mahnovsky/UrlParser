@@ -12,6 +12,19 @@
 
 #define MAX_BUFFER_SIZE 1024 * 1024
 
+struct Comparer
+{
+	bool operator() (const char* lhs, const char* rhs) const
+	{
+		return strncmp(lhs, rhs, MAX_BUFFER_SIZE) < 0;
+	}
+};
+
+using PairVector = std::vector<Pair>;
+using StringVector = std::vector<std::string>;
+using CStringMap = std::map <const char*, size_t, Comparer>;
+
+
 struct Args
 {
 	enum
@@ -28,7 +41,6 @@ struct Args
 	char const* inFile;
 	char const* outFile;
 };
-
 
 inline bool CheckSymbol(char from, char to, char ch)
 {
@@ -76,13 +88,11 @@ struct Pair
 
 	bool operator==(const char* other) const
 	{
-		printf("==");
 		return strcmp(_str, other) == 0;
 	}
 
 	bool operator>(const Pair& other) const
 	{
-		printf(">");
 		if (_count == other._count) return strcmp(_str, other._str) > 0;
 		return _count > other._count;
 	}
@@ -106,29 +116,17 @@ struct Pair
 	}
 };
 
-using PairVector = std::vector<Pair>;
-using StringVector = std::vector<std::string>;
-
-struct Comparer
-{
-	bool operator() (const char* lhs, const char* rhs) const
-	{
-		return strncmp(lhs, rhs, MAX_BUFFER_SIZE) < 0;
-	}
-};
-using CStringMap = std::map <const char*, size_t, Comparer>;
-
 class StringPool
 {
 public:
 	struct Node
 	{
 		size_t pos;
-		std::unique_ptr<char> buffer;
+		std::unique_ptr<char, void(*)(void*)> buffer;
 
 		Node(size_t l, char* b)
 			: pos(l)
-			, buffer(b)
+			, buffer(b, free)
 		{}
 	};
 
@@ -152,6 +150,7 @@ public:
 				bpos[len] = '\0';
 				n.pos += nlen;
 				res = bpos;
+
 				break;
 			}
 		}
@@ -220,10 +219,11 @@ public:
 	const char* getCStr() const { return _strBuff; }
 
 	size_t getLen() const { return _pos; }
+
 private:
-	char* _strBuff;
-	size_t _size;
-	size_t _pos;
+	char*	_strBuff;
+	size_t	_size;
+	size_t	_pos;
 };
 
 class UrlCollector
@@ -261,12 +261,6 @@ public:
 		_funcs[Done]	= &UrlCollector::done;
 	}
 
-	void done(char, char*) { _state = Begin; }
-
-	~UrlCollector()
-	{
-	}
-
 	void update(char ch, char* pch)
 	{
 		(this->*_funcs[_state])(ch, pch);
@@ -293,6 +287,7 @@ public:
 	}
 
 protected:
+
 	void begin(char ch, char* pch)
 	{
 		char* m = pch;
@@ -401,6 +396,8 @@ protected:
 		_word.add(ch);
 	}
 
+	void done(char, char*) { _state = Begin; }
+
 	int swap(PairVector& cont, CStringMap& links, int newIndex, int index)
 	{
 		if (newIndex >= 0 && newIndex != index)
@@ -502,8 +499,8 @@ private:
 	PairVector				_domains;
 	PairVector				_paths;
 
-	CStringMap	_pathIndexes;
-	CStringMap	_domainIndexes;
+	CStringMap				_pathIndexes;
+	CStringMap				_domainIndexes;
 
 	const std::string		_prefix;
 	const std::string		_prefixS;

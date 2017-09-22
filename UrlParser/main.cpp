@@ -501,11 +501,9 @@ private:
 
 	CStringMap				_pathIndexes;
 	CStringMap				_domainIndexes;
-
 	const std::string		_prefix;
 	const std::string		_prefixS;
-
-	StringPool _strings;
+	StringPool				_strings;
 };
 
 bool isEntry(const char* str)
